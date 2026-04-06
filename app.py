@@ -103,3 +103,12 @@ if st.session_state.survey_started:
             st.success(f"Done! Your result: {result} (Score: {total_score})")
             
             # (Your logic for saving JSON goes here)
+ # Save results
+            record = {
+                "name": name, "surname": surname, "dob": str(dob),
+                "student_id": sid, "total_score": total_score,
+                "result": status, "answers": final_answers, "version": version_float
+            }
+            
+            json_filename = f"{sid}_result.json"
+            st.download_button("Download Result JSON", json.dumps(record, indent=2), file_name=json_filename)
