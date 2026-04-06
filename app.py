@@ -11,7 +11,8 @@ if 'survey_started' not in st.session_state:
 
 # -------- DATA --------
 version_float = 1.1
- {"q": "How many hours per day do you spend on your smartphone?",
+questions = [
+    {"q": "How many hours per day do you spend on your smartphone?",
      "opts": [("Less than 1 hour",0),("1-2 hours",1),("3-4 hours",2),("5-6 hours",3),("More than 6 hours",4)]},
     {"q": "How often do you check your phone immediately after waking up?",
      "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
