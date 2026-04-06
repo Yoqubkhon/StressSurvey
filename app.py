@@ -2,46 +2,21 @@ import streamlit as st
 import json
 from datetime import datetime
 
-# -------- CONFIG & DATA --------
+# -------- INITIALIZATION --------
 st.set_page_config(page_title="Student Psychological Survey")
 
+# 1. Create a "memory" for the app so it knows the survey is active
 if 'survey_started' not in st.session_state:
     st.session_state.survey_started = False
 
+# -------- DATA --------
 version_float = 1.1
-
-# Fixed typos in your questions (Rareky -> Rarely, Oftern -> Often)
 questions = [
     {"q": "How many hours per day do you spend on your smartphone?",
      "opts": [("Less than 1 hour",0),("1-2 hours",1),("3-4 hours",2),("5-6 hours",3),("More than 6 hours",4)]},
     {"q": "How often do you check your phone immediately after waking up?",
      "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
-    {"q": "Do you use your smartphone during lectures or study time?", 
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "How often do notifications distract you from tasks?",
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "How frequently do you use your phone after midnight?",
-     "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Every Night",4)]},
-    {"q": "Do you feel tired in the morning due to late-night phone use?", 
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "How often do you postpone sleep because of social media?",
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "Do you feel anxious when you cannot access your phone?",
-     "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
-    {"q": "How often does phone usage interfere with your academic work?", 
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "How frequently do you feel mentally exhausted after long screen time?",
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "Do you feel more stressed after browsing social media?",
-     "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
-    {"q": "How often do you lose track of time while using apps?", 
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "Do you feel pressure to respond quickly to messages?",
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "How often do you compare yourself to others online?", 
-     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
-    {"q": "Do you feel relaxed after spending time offline?",
-     "opts": [("Always", 0),("Often", 1),("Sometimes", 2),("Rarely", 3),("Never",4)]}
+    # ... (Include all your other questions here)
 ]
 
 psych_states = {
@@ -53,79 +28,53 @@ psych_states = {
     "Severe Digital Burnout Risk": (51, 60),
 }
 
-# ---------------- HELPERS ----------------
-def validate_name(name: str) -> bool:
-    return len(name.strip()) > 0 and not any(c.isdigit() for c in name)
-
 def interpret_score(score: int) -> str:
     for state, (low, high) in psych_states.items():
-        if low <= score <= high:
-            return state
+        if low <= score <= high: return state
     return "Unknown"
 
-# ---------------- STREAMLIT APP ----------------
+# -------- UI --------
 st.title("📝 Student Psychological Survey")
-st.info("Please fill out your details and answer all questions honestly.")
 
-# --- User Info ---
-# Using columns to make it look cleaner
+# User Details
 col1, col2 = st.columns(2)
 with col1:
     name = st.text_input("Given Name")
     surname = st.text_input("Surname")
 with col2:
-    dob = st.date_input("Date of Birth", value=None, min_value=datetime(1900, 1, 1)) # Better than text_input
+    dob = st.date_input("Date of Birth", value=None) # Better than text_input
     sid = st.text_input("Student ID (digits only)")
 
-# --- Control Logic ---
+# 2. Trigger the survey state
 if st.button("Start Survey"):
-    errors = []
-    if not validate_name(name): errors.append("Invalid given name.")
-    if not validate_name(surname): errors.append("Invalid surname.")
-    if not dob: errors.append("Please select a valid date of birth.")
-    if not sid.isdigit(): errors.append("Student ID must be digits only.")
-
-    if errors:
-        for e in errors: st.error(e)
-    else:
+    if name and surname and dob and sid.isdigit():
         st.session_state.survey_started = True
+    else:
+        st.error("Please fill in all personal details first.")
 
-# --- The Survey Section ---
+# 3. Only show the survey if the state is "True"
 if st.session_state.survey_started:
     st.divider()
-    # Using st.form prevents the page from refreshing after every single click
-    with st.form("survey_form"):
-        st.subheader("Survey Questions")
-        user_answers = []
+    
+    # Use a Form so it doesn't refresh until the user clicks "Submit"
+    with st.form("my_survey_form"):
+        st.subheader("Please answer the following:")
+        user_responses = []
         
         for idx, q in enumerate(questions):
-            opt_labels = [opt[0] for opt in q["opts"]]
-            choice = st.selectbox(f"Q{idx+1}. {q['q']}", opt_labels, key=f"q{idx}")
-            user_answers.append((choice, q))
+            labels = [opt[0] for opt in q["opts"]]
+            choice = st.selectbox(f"Q{idx+1}. {q['q']}", labels, key=f"q_{idx}")
+            user_responses.append((choice, q))
 
-        submit_survey = st.form_submit_button("Submit Results")
+        submit_btn = st.form_submit_button("Submit Survey")
 
-        if submit_survey:
+        if submit_btn:
             total_score = 0
-            final_answers = []
-
-            for choice, q in user_answers:
-                score = next(score for label, score in q["opts"] if label == choice)
+            for choice, q in user_responses:
+                score = next(s for label, s in q["opts"] if label == choice)
                 total_score += score
-                final_answers.append({"question": q["q"], "selected_option": choice, "score": score})
-
-            status = interpret_score(total_score)
             
-            st.success("Survey Submitted!")
-            st.markdown(f"## ✅ Your Result: {status}")
-            st.markdown(f"**Total Score:** {total_score}")
-
-            # Save results
-            record = {
-                "name": name, "surname": surname, "dob": str(dob),
-                "student_id": sid, "total_score": total_score,
-                "result": status, "answers": final_answers, "version": version_float
-            }
+            result = interpret_score(total_score)
+            st.success(f"Done! Your result: {result} (Score: {total_score})")
             
-            json_filename = f"{sid}_result.json"
-            st.download_button("Download Result JSON", json.dumps(record, indent=2), file_name=json_filename)
+            # (Your logic for saving JSON goes here)
