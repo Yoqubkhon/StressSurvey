@@ -11,12 +11,36 @@ if 'survey_started' not in st.session_state:
 
 # -------- DATA --------
 version_float = 1.1
-questions = [
-    {"q": "How many hours per day do you spend on your smartphone?",
+ {"q": "How many hours per day do you spend on your smartphone?",
      "opts": [("Less than 1 hour",0),("1-2 hours",1),("3-4 hours",2),("5-6 hours",3),("More than 6 hours",4)]},
     {"q": "How often do you check your phone immediately after waking up?",
      "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
-    # ... (Include all your other questions here)
+    {"q": "Do you use your smartphone during lectures or study time?", 
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "How often do notifications distract you from tasks?",
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "How frequently do you use your phone after midnight?",
+     "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Every Night",4)]},
+    {"q": "Do you feel tired in the morning due to late-night phone use?", 
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "How often do you postpone sleep because of social media?",
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "Do you feel anxious when you cannot access your phone?",
+     "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
+    {"q": "How often does phone usage interfere with your academic work?", 
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "How frequently do you feel mentally exhausted after long screen time?",
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "Do you feel more stressed after browsing social media?",
+     "opts": [("Never",0),("Rarely",1),("Sometimes",2),("Often",3),("Always",4)]},
+    {"q": "How often do you lose track of time while using apps?", 
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "Do you feel pressure to respond quickly to messages?",
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "How often do you compare yourself to others online?", 
+     "opts": [("Never", 0),("Rarely", 1),("Sometimes", 2),("Often", 3),("Always",4)]},
+    {"q": "Do you feel relaxed after spending time offline?",
+     "opts": [("Always", 0),("Often", 1),("Sometimes", 2),("Rarely", 3),("Never",4)]}
 ]
 
 psych_states = {
